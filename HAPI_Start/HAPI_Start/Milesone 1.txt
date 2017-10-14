@@ -1,0 +1,31 @@
+Liam O'Neil S6063776
+Milestone 1 12/10/2017
+--------------------------------
+
+New Functionality
+-----------------
+
+-A mixture of coloured stars spawn on screen
+-3D movement towards stars
+-Can control movement with 'W' and 'S'
+-Screen background can be chosen
+
+Code Additions
+--------------
+
+-ClearToColour function added
+-DrawStars function added
+-Star struct created
+-Keyboard input added
+
+Tests
+-----
+
+-Visual tests ensured that the stars appear correctly
+-Tested with 10000000 stars resulting in extremely low fps however the program did not crash
+
+Notes
+-----
+
+-Could potentially add in steering
+-Stars could get bigger as they get closer
