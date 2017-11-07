@@ -1,29 +1,52 @@
 #include <HAPI_lib.h>
+#include "Visualisation.h"
 
 
 using namespace HAPISPACE;
-void ClearToColour(BYTE r, BYTE g, BYTE b, BYTE* screen, int width, int height);void FastBlit(BYTE* screenPointer, BYTE* texturePointer, int screenHeight, int textureHeight, int screenWidth, int textureWidth);
+
 
 void HAPI_Main()
 {
+	Visualisation viz;
 	int width(1280);
 	int height(720);
-	
+
 	HAPI_TColour textfill(HAPI_TColour::CYAN);
 
 
 	if (!HAPI.Initialise(width, height, "The little HAPI window that could"))
 		return;
 
-	BYTE *texPoint;
+	/*BYTE *texPoint;
 	int texWidth, texHeight;
 	if (!HAPI.LoadTexture("Data\\alphaThing.tga", &texPoint, texWidth, texHeight))
+	{
+		HAPI.UserMessage("Texture not found: Data\\alphaThing.tga ", "Error");
 		return;
-
-
+	}*/
+		
+	
+	//BYTE *backPoint;
+	//int backWidth, backHeight;
+	//if (!HAPI.LoadTexture("Data\\background.tga", &backPoint, backWidth, backHeight))
+	//{
+	//	HAPI.UserMessage("Texture not found: Data\\background.tga", "Error");
+	//	return;
+	//}
+	viz.CreateSprite("Data\\alphaThing.tga", "circle");
+	viz.CreateSprite("Data\\background.tga", "background");
+	int texHeight = viz.getSprite("circle").getHeight();
+	int texWidth = viz.getSprite("circle").getHeight();
 	BYTE* screen = HAPI.GetScreenPointer();
 	HAPI.SetShowFPS(true);
+	float circlePosX = 0;
+	float circlePosY = 0;
+	bool isVert = false;
+	bool isHor = false;
+	int moveSpeed = 3;
+	int hypot = moveSpeed*moveSpeed * 2;
 
+	
 	while (HAPI.Update())
 	{
 
@@ -33,26 +56,71 @@ void HAPI_Main()
 		{
 			HAPI.Close();
 		}
-		ClearToColour(0, 0, 50, screen, width, height);
-		FastBlit(screen, texPoint, height, texHeight, width, texWidth);
+		if (keyboard.scanCode['W'] && circlePosY > 0)
+		{
+			isVert = true;
+			if (isHor)
+			{
+				circlePosY -= sqrt((moveSpeed*moveSpeed)/2);
+			}
+			else
+			{
+				circlePosY -= moveSpeed;
+			}
+		}
+		if (keyboard.scanCode['S'] && circlePosY < height - texHeight - 1)
+		{
+			isVert = true;
+			if (isHor)
+			{
+				circlePosY += sqrt((moveSpeed*moveSpeed) / 2);
+			}
+			else
+			{
+				circlePosY += moveSpeed;
+			}
+		}
+		if (keyboard.scanCode['A'] && circlePosX > 0)
+		{
+			isHor = true;
+			if (isVert)
+			{
+				circlePosX -= sqrt((moveSpeed*moveSpeed) / 2);
+			}
+			else
+			{
+				circlePosX -= moveSpeed;
+			}
+		}
+		if (keyboard.scanCode['D'] && circlePosX < width - texWidth - 1)
+		{
+			isHor = true;
+			if (isVert)
+			{
+				circlePosX += sqrt((moveSpeed*moveSpeed) / 2);
+			}
+			else
+			{
+				circlePosX += moveSpeed;
+			}
+		}
+		if (!keyboard.scanCode['W'] && !keyboard.scanCode['S'])
+		{
+			isVert = false;
+		}
+		if (!keyboard.scanCode['A'] && !keyboard.scanCode['D'])
+		{
+			isHor = false;
+		}
+	
+		viz.ClearToColour(100, 0, 0, screen, width, height);
+		viz.DrawSpriteNoAlpha("background", screen, height, width, 0, 0);
+		viz.DrawSprite("circle", screen, height, width, circlePosX, circlePosY);
 		
+
+
 	}
-	delete[] texPoint;
+	/*delete[] texPoint;*/
+	//delete[] backPoint;
 }
 
-void ClearToColour(BYTE r, BYTE g, BYTE b, BYTE* screen, int width, int height)
-{
-	for (int i = 0; i < width*height * 4; i += 4)
-	{
-		screen[i] = r;
-		screen[i + 1] = g;
-		screen[i + 2] = b;
-	}
-}
-void FastBlit(BYTE* screenPointer, BYTE* texturePointer, int screenHeight, int textureHeight, int screenWidth, int textureWidth){
-	for (int y = 0; y < textureHeight; y++)
-	{
-		memcpy(screenPointer, texturePointer, textureHeight * 4);
-		screenPointer = screenPointer + screenWidth * 4;
-		texturePointer = texturePointer + textureWidth * 4;
-	}}

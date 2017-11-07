@@ -1,0 +1,20 @@
+Liam O'Neil S6063776
+Milestone 2 26/10/2017
+--------------------------------
+
+New Functionality
+-----------------
+
+
+Code Additions
+--------------
+-Code refactored into class structure
+
+
+Tests
+-----
+
+
+
+Notes
+-----

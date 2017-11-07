@@ -1,0 +1,31 @@
+Liam O'Neil S6063776
+Milestone 2 26/10/2017
+--------------------------------
+
+New Functionality
+-----------------
+-Textures can be loaded from a file and drawn to the screen
+-Sprite can be moved in any direction at the same speed
+-Error message when texture does not exist
+
+
+Code Additions
+--------------
+-FastBlit() added
+-Blit() added, this uses alpha
+-HAPI.UserMessage added for errors
+-Boolean to check for diagonal movement, in order to restrict speed so that it is always constant in every direction
+-Keyboard input in order to increment and decrement the x and positions of the sprite
+-Sprite movement restricted to screen
+
+Tests
+-----
+-Error tested by loading a texture that doesn't exist
+-Movement around the edge of the screen tested
+
+
+Notes
+-----
+-Could add multiple modes of input
+-Could add extra players
+-Could add acceleration
