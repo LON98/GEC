@@ -17,27 +17,11 @@ void HAPI_Main()
 	if (!HAPI.Initialise(width, height, "The little HAPI window that could"))
 		return;
 
-	/*BYTE *texPoint;
-	int texWidth, texHeight;
-	if (!HAPI.LoadTexture("Data\\alphaThing.tga", &texPoint, texWidth, texHeight))
-	{
-		HAPI.UserMessage("Texture not found: Data\\alphaThing.tga ", "Error");
-		return;
-	}*/
-		
-	
-	//BYTE *backPoint;
-	//int backWidth, backHeight;
-	//if (!HAPI.LoadTexture("Data\\background.tga", &backPoint, backWidth, backHeight))
-	//{
-	//	HAPI.UserMessage("Texture not found: Data\\background.tga", "Error");
-	//	return;
-	//}
 	viz.CreateSprite("Data\\alphaThing.tga", "circle");
 	viz.CreateSprite("Data\\background.tga", "background");
-	int texHeight = viz.getSprite("circle").getHeight();
-	int texWidth = viz.getSprite("circle").getHeight();
+	
 	BYTE* screen = HAPI.GetScreenPointer();
+	Rectangle screenRect{ width,height };
 	HAPI.SetShowFPS(true);
 	float circlePosX = 0;
 	float circlePosY = 0;
@@ -52,11 +36,85 @@ void HAPI_Main()
 
 		HAPI_TKeyboardData keyboard = HAPI.GetKeyboardData();
 		
+		const HAPI_TControllerData& controller = HAPI.GetControllerData(0);
+		
+		if (controller.isAttached)
+		{
+			int xVal = controller.analogueButtons[HK_ANALOGUE_LEFT_THUMB_X];
+			int yVal = controller.analogueButtons[HK_ANALOGUE_LEFT_THUMB_Y];
+			if (xVal >  HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isHor = true;
+				if (isVert)
+				{
+					circlePosX += sqrt((moveSpeed*moveSpeed) / 2);
+				}
+				else
+				{
+					circlePosX += moveSpeed;
+				}
+			}
+			if (xVal < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isHor = true;
+				if (isVert)
+				{
+					circlePosX -= sqrt((moveSpeed*moveSpeed) / 2);
+				}
+				else
+				{
+					circlePosX -= moveSpeed;
+				}
+			}
+			if (yVal < -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isVert = true;
+				if (isHor)
+				{
+					circlePosY += sqrt((moveSpeed*moveSpeed) / 2);
+				}
+				else
+				{
+					circlePosY += moveSpeed;
+				}
+			}
+			if (yVal > HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isVert = true;
+				if (isHor)
+				{
+					circlePosY -= sqrt((moveSpeed*moveSpeed) / 2);
+				}
+				else
+				{
+					circlePosY -= moveSpeed;
+				}
+			}
+			if (yVal < HK_GAMEPAD_LEFT_THUMB_DEADZONE && yVal > -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isVert = false;
+			}
+			if (xVal < HK_GAMEPAD_LEFT_THUMB_DEADZONE && xVal > -HK_GAMEPAD_LEFT_THUMB_DEADZONE)
+			{
+				isHor = false;
+			}
+			if (circlePosX <= (width / 2) + 100 && circlePosX >= (width / 2) - 100 && circlePosY >= (height / 2) - 100 && circlePosY <= (height / 2) + 100)
+			{
+				HAPI.SetControllerRumble(0, 65000, 65000);
+			}
+			else
+			{
+				HAPI.SetControllerRumble(0, 0, 0);
+			}
+
+			
+		}
+		
 		if (keyboard.scanCode[HK_ESCAPE])
 		{
 			HAPI.Close();
 		}
-		if (keyboard.scanCode['W'] && circlePosY > 0)
+		if (keyboard.scanCode['W'])
 		{
 			isVert = true;
 			if (isHor)
@@ -68,7 +126,7 @@ void HAPI_Main()
 				circlePosY -= moveSpeed;
 			}
 		}
-		if (keyboard.scanCode['S'] && circlePosY < height - texHeight - 1)
+		if (keyboard.scanCode['S'])
 		{
 			isVert = true;
 			if (isHor)
@@ -80,7 +138,7 @@ void HAPI_Main()
 				circlePosY += moveSpeed;
 			}
 		}
-		if (keyboard.scanCode['A'] && circlePosX > 0)
+		if (keyboard.scanCode['A'])
 		{
 			isHor = true;
 			if (isVert)
@@ -92,7 +150,7 @@ void HAPI_Main()
 				circlePosX -= moveSpeed;
 			}
 		}
-		if (keyboard.scanCode['D'] && circlePosX < width - texWidth - 1)
+		if (keyboard.scanCode['D'])
 		{
 			isHor = true;
 			if (isVert)
@@ -115,12 +173,9 @@ void HAPI_Main()
 	
 		viz.ClearToColour(100, 0, 0, screen, width, height);
 		viz.DrawSpriteNoAlpha("background", screen, height, width, 0, 0);
-		viz.DrawSprite("circle", screen, height, width, circlePosX, circlePosY);
-		
+		viz.ClipBlit(screen, screenRect, "circle", circlePosX, circlePosY);
 
 
 	}
-	/*delete[] texPoint;*/
-	//delete[] backPoint;
 }
 
